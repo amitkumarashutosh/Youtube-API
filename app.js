@@ -17,6 +17,15 @@ app.get("/", (req, res) => {
   res.send("connect to db successfully");
 });
 
+//routes
+import userRouter from "./src/routes/user.route.js";
+
+app.use("/api/v1/users", userRouter);
+
+//not found
+import notFound from "./src/utils/notFound.js";
+app.use(notFound);
+
 //database
 import connectDB from "./src/db/index.js";
 

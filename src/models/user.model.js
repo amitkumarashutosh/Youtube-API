@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import bcrypt, { genSalt } from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, "Username is reequired"],
+      required: [true, "Username is required"],
       unique: true,
       lowercase: true,
       trim: true,
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     fullName: {
       type: String,
-      required: [true, "FUll name is required"],
+      required: [true, "Full Name is required"],
       trim: true,
       index: true,
     },
