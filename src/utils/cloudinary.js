@@ -20,3 +20,15 @@ export const uploadOnCloudinary = async (localFilePath) => {
     return null;
   }
 };
+
+export const deleteOnCloudinary = async (userImageURL) => {
+  try {
+    const currentAvatar = userImageURL;
+    const startIndex = currentAvatar.lastIndexOf("/") + 1;
+    const endIndex = currentAvatar.lastIndexOf(".");
+    const avatarId = currentAvatar.substring(startIndex, endIndex);
+    await cloudinary.uploader.destroy(avatarId);
+  } catch (error) {
+    return null;
+  }
+};

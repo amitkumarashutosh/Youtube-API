@@ -1,9 +1,8 @@
 import { User } from "../models/user.model.js";
 import ApiError from "../utils/error.js";
 import asyncHandler from "../utils/async.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import { v2 as cloudinary } from "cloudinary";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -194,17 +193,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   }
   //delete previous image before uploading new image from cloudinary
   const currentUser = await User.findById(req.user._id);
-  const currentAvatar = currentUser.avatar;
-  const startIndex = currentAvatar.lastIndexOf("/") + 1;
-  const endIndex = currentAvatar.lastIndexOf(".");
-  const avatarId = currentAvatar.substring(startIndex, endIndex);
 
   const avatar = await uploadOnCloudinary(path);
   if (!avatar.url) {
     throw new ApiError(401, "Error while uploading avatar");
   }
   //delete previous file
-  await cloudinary.uploader.destroy(avatarId);
+  await deleteOnCloudinary(currentUser.avatar);
 
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
@@ -223,10 +218,16 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   if (!path) {
     throw new ApiError(401, "Please provide cover image");
   }
+
+  const currentUser = await User.findById(req.user._id);
+
   const coverImage = await uploadOnCloudinary(path);
   if (!coverImage.url) {
     throw new ApiError(401, "Error while uploading cover image");
   }
+
+  await deleteOnCloudinary(currentUser.coverImage);
+
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
     {
